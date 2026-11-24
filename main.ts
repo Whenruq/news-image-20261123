@@ -1,18 +1,23 @@
-// Entry for make.fun's news-image-20261123 bounty. Node 22, standard library only.
-// The image beside this file, entry.png, is a 1024x1024 front page summing up the
-// world news of Monday 23 November 2026: tankers burning in the Strait of Hormuz
-// after hitting naval mines, Nvidia reinstating Jensen Huang as chief executive,
-// the Dymer death toll reaching 11, Kyiv claiming a Russian warship sunk in Libya,
-// the COP31 talks collapsing, and the search resuming at the Cikande factory.
-// This program copies that image to /output/entry.png. The gate accepts a whole
-// PNG or JPEG of at most 1 MiB and 1024 by 1024 pixels, and the judge sees exactly
-// the bytes copied, so the run is deterministic: the same committed bytes are
-// written on every run.
+// Entry for make.fun's news-image-20261123 bounty (Node 22, standard library only).
+// The entry image is the entry.png beside this file: a 1024x1024 front page summing up
+// Monday 23 November 2026 (tankers ablaze in the Strait of Hormuz, Nvidia bringing
+// back Jensen Huang as CEO, the Dymer toll reaching eleven, Kyiv claiming the
+// sinking of a Russian corvette off Libya, the COP31 collapse, and the Cikande
+// factory fire search). The program copies it to /output/entry.png; the gate takes
+// a whole PNG or JPEG of at most 1 MiB and 1024 by 1024 pixels, and the judge sees
+// exactly the bytes copied.
 //
-// To try it outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
+// Outside the grader's container, MAKEFUN_OUTPUT_DIR stands in for /output:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 
-import { copyFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-copyFileSync(new URL('./entry.png', import.meta.url), join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'));
+// Deterministic by construction: the same committed bytes are copied on every run,
+// so two runs write identical output, as the bounty requires.
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+
+// Create the output directory first: the grader's /output may not exist yet,
+// and a missing directory would make the copy fail for no good reason.
+mkdirSync(outDir, { recursive: true });
+copyFileSync(new URL('./entry.png', import.meta.url), join(outDir, 'entry.png'));
